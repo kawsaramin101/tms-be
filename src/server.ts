@@ -7,7 +7,7 @@ app.use(express.json());
 
 app.get("/", (_req, res) => {
   res.json({
-    message: "Hello from Express + TypeScript!"
+    message: "Hello from Express + TypeScript! Hello World"
   });
 });
 
