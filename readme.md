@@ -382,85 +382,24 @@ Do not modify the schema until I confirm.
 
 # Git & GitHub Workflow
 
-This repository uses a **Fork → Branch → Pull Request** workflow.
+Everyone works directly from the main repository as a GitHub collaborator.
 
-Do not push directly to the main repository.
-
-## 1. Fork the repository
-
-Go to:
+Repository:
 
 ```text
 https://github.com/kawsaramin101/tms-be
 ```
 
-Click **Fork**.
-
-You should now have:
-
-```text
-https://github.com/<your-username>/tms-be
-```
-
----
-
-## 2. Clone your fork
+## 1. Clone the repository
 
 ```bash
-git clone https://github.com/<your-username>/tms-be.git
+git clone https://github.com/kawsaramin101/tms-be.git
 cd tms-be
 ```
 
----
+## 2. Create your own branch
 
-## 3. Configure the original repository as `upstream`
-
-Your fork is `origin`.
-
-The class repository is `upstream`.
-
-```bash
-git remote add upstream https://github.com/kawsaramin101/tms-be.git
-```
-
-Verify:
-
-```bash
-git remote -v
-```
-
-You should see something similar to:
-
-```text
-origin    https://github.com/<your-username>/tms-be.git
-upstream  https://github.com/kawsaramin101/tms-be.git
-```
-
----
-
-# Before Starting New Work
-
-First update your local copy from the main repository:
-
-```bash
-git fetch upstream
-git checkout main
-git merge upstream/main
-```
-
-Then push the updated main branch to your fork:
-
-```bash
-git push origin main
-```
-
----
-
-# Create a Feature Branch
-
-Never develop directly on `main`.
-
-Create a branch:
+**Do not work directly on `main`.**
 
 ```bash
 git checkout -b feature/<your-feature>
@@ -470,53 +409,39 @@ Examples:
 
 ```bash
 git checkout -b feature/member-management
-```
-
-```bash
 git checkout -b feature/voucher-upload
-```
-
-```bash
 git checkout -b feature/transaction-api
 ```
 
----
+## 3. Work on your feature
 
-# Commit Your Changes
+Make your changes inside your team's module.
 
-Check what changed:
+For example:
+
+```text
+src/modules/members/
+```
+
+## 4. Commit your changes
 
 ```bash
 git status
-```
-
-Stage your changes:
-
-```bash
 git add .
-```
-
-Commit:
-
-```bash
 git commit -m "feat: add member management"
 ```
 
-Examples:
+Use clear commit messages:
 
 ```text
 feat: add member management
 feat: add voucher upload
-feat: add transaction creation
 fix: validate transaction amount
-fix: handle invalid login
 refactor: simplify transaction service
 docs: update API documentation
 ```
 
----
-
-# Push Your Branch
+## 5. Push your branch
 
 ```bash
 git push -u origin feature/<your-feature>
@@ -528,59 +453,54 @@ Example:
 git push -u origin feature/member-management
 ```
 
----
+## 6. Create a Pull Request
 
-# Create a Pull Request
+After pushing your branch, open the repository on GitHub.
 
-After pushing your branch:
-
-1. Open your fork on GitHub.
-2. GitHub should show your recently pushed branch.
-3. Click **Compare & pull request**.
-4. Make sure the Pull Request is going:
+Create a Pull Request:
 
 ```text
-YOUR-USERNAME/tms-be
-        ↓
-kawsaramin101/tms-be
-        ↓
+your branch
+     ↓
 main
 ```
 
-5. Add a clear title.
+Explain:
 
-Example:
+* What you changed
+* Which module you worked on
+* Whether you changed the database
+* How you tested it
 
-```text
-feat: add member management
-```
+Wait for the project maintainer/team lead to review and merge the Pull Request.
 
-6. Submit the Pull Request.
+## 7. Keep your branch updated
 
-
----
-
-
-# Keeping Your Fork Updated
-
-While other teams are working, the main repository will continue to change.
-
-Before starting new work:
+Before starting new work, update your local `main`:
 
 ```bash
-git fetch upstream
 git checkout main
-git merge upstream/main
-git push origin main
+git pull origin main
 ```
 
-Then create a new feature branch:
+Then create a new branch:
 
 ```bash
 git checkout -b feature/<your-feature>
 ```
 
-This keeps your fork synchronized with the class repository.
+If you are already working on a branch and `main` has received important changes, coordinate before merging `main` into your branch.
+
+## Important Rules
+
+* **Never push directly to `main`.**
+* One feature/task = one branch.
+* Use descriptive branch names.
+* Keep your changes focused on your assigned module.
+* Don't modify another team's module unnecessarily.
+* Don't commit `.env` secrets or production credentials.
+* Database/schema changes must be communicated to the team before merging.
+
 
 ---
 
