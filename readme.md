@@ -120,313 +120,63 @@ The development server uses `tsx` and automatically reloads when source files ch
 
 # Project Structure
 
+The backend uses a **feature-based architecture**. Each team owns one module.
+
 ```text
-tms-be/
+src/
+├── modules/
+│   ├── auth/             # Team 1
+│   ├── transactions/     # Team 2
+│   ├── vouchers/         # Team 3
+│   ├── calculations/     # Team 4
+│   ├── members/          # Team 5
+│   ├── fees/             # Team 6
+│   ├── reports/          # Team 7
+│   └── notifications/    # Team 8
 │
-├── prisma/
-│   ├── schema.prisma
-│   └── migrations/
-│
-├── src/
-│   │
-│   ├── modules/
-│   │   ├── auth/
-│   │   ├── transactions/
-│   │   ├── vouchers/
-│   │   ├── calculations/
-│   │   ├── members/
-│   │   ├── fees/
-│   │   ├── reports/
-│   │   └── notifications/
-│   │
-│   ├── middleware/
-│   ├── lib/
-│   ├── config/
-│   │
-│   ├── app.ts
-│   └── server.ts
-│
-├── uploads/
-│   └── vouchers/
-│
-├── tests/
-│
-├── .env
-├── .gitignore
-├── package.json
-├── package-lock.json
-├── prisma.config.ts
-└── tsconfig.json
-```
+├── middleware/           # Shared Express middleware
+├── lib/                  # Shared utilities/services
+├── config/               # Application configuration
+├── app.ts                # Express app configuration
+└── server.ts             # Server entry point
+
+prisma/
+├── schema.prisma         # Database schema
+└── migrations/           # Database migrations
 
----
-
-# Team Modules
-
-There are 8 feature teams.
-
-| Team   | Module          | Responsibility                        |
-| ------ | --------------- | ------------------------------------- |
-| Team 1 | `auth`          | Authentication & access control       |
-| Team 2 | `transactions`  | Income and expense transactions       |
-| Team 3 | `vouchers`      | Voucher creation, tracking and photos |
-| Team 4 | `calculations`  | Automatic calculations and balances   |
-| Team 5 | `members`       | Member management                     |
-| Team 6 | `fees`          | Member fee management                 |
-| Team 7 | `reports`       | Reports and financial status          |
-| Team 8 | `notifications` | Notifications and reminders           |
-
-Each team should primarily work inside its own module.
-
----
-
-# Module Structure
-
-Each feature module follows the same basic structure.
-
-Example:
-
-```text
-src/modules/members/
-├── member.controller.ts
-├── member.service.ts
-├── member.routes.ts
-├── member.validation.ts
-└── member.types.ts
-```
-
-## Controller
-
-```text
-member.controller.ts
-```
-
-Handles HTTP requests and responses.
-
-The controller should:
-
-* Read request data
-* Call the appropriate service
-* Return the HTTP response
-* Handle request/response-related logic
-
-Business logic should not normally live here.
-
-## Service
-
-```text
-member.service.ts
-```
-
-Contains the actual business logic.
-
-For example:
-
-* Create member
-* Update member
-* Find member
-* Delete member
-* Calculate member-related information
-
-Database operations should normally be called from the service layer.
-
-## Routes
-
-```text
-member.routes.ts
-```
-
-Defines the API endpoints for the module.
-
-Example:
-
-```text
-GET    /members
-GET    /members/:id
-POST   /members
-PATCH  /members/:id
-DELETE /members/:id
-```
-
-Routes should connect HTTP endpoints to controllers.
-
-## Validation
-
-```text
-member.validation.ts
-```
-
-Contains request validation rules.
-
-For example:
-
-* Required fields
-* Data types
-* Valid formats
-* Business input constraints
-
-## Types
-
-```text
-member.types.ts
-```
-
-Contains TypeScript types/interfaces that are specific to the module.
-
----
-
-# Shared Folders
-
-These folders are shared by all teams.
-
-## `src/middleware/`
-
-Contains Express middleware used across the application.
-
-```text
-src/middleware/
-├── auth.middleware.ts
-├── error.middleware.ts
-└── upload.middleware.ts
-```
-
-Examples:
-
-* Authentication checks
-* Authorization checks
-* Error handling
-* File upload handling
-
-Teams should reuse existing middleware instead of creating duplicate middleware inside their modules.
-
----
-
-# `src/lib/`
-
-Contains shared libraries and infrastructure.
-
-```text
-src/lib/
-├── prisma.ts
-├── jwt.ts
-└── logger.ts
-```
-
-Examples:
-
-* Prisma client
-* JWT utilities
-* Logging
-
-Do not create another Prisma client inside your feature module.
-
-Use the shared Prisma client.
-
----
-
-# `src/config/`
-
-Application configuration.
-
-```text
-src/config/
-└── env.ts
-```
-
-Environment variables and application configuration should be handled here.
-
----
-
-# `src/app.ts`
-
-Creates and configures the Express application.
-
-This is where application-level configuration belongs, such as:
-
-* Express initialization
-* Middleware registration
-* API route registration
-* Error middleware
-
-Feature business logic does **not** belong here.
-
----
-
-# `src/server.ts`
-
-Application entry point.
-
-It starts the HTTP server.
-
-Keep server startup logic here rather than putting business logic into this file.
-
----
-
-# Prisma
-
-## `prisma/schema.prisma`
-
-This is the central database schema.
-
-All database models are defined here.
-
-### Important
-
-Because all 8 teams use the same database, **do not independently redesign or duplicate database models** inside individual modules.
-
-If your feature requires a database change:
-
-1. Discuss the model with the team responsible for the database.
-2. Update `schema.prisma`.
-3. Create a Prisma migration.
-4. Test the migration.
-5. Commit the schema and migration together.
-6. Mention the database change in your Pull Request.
-
-## `prisma/migrations/`
-
-Contains generated database migrations.
-
-Do not manually edit an already-applied migration unless the team has specifically agreed to do so.
-
----
-
-# Uploads
-
-```text
 uploads/
-└── vouchers/
+└── vouchers/             # Voucher files/images
+
+tests/                    # Tests
 ```
 
-Voucher images/files are stored here during development.
-
-The vouchers team owns the voucher upload functionality, while the shared upload middleware handles common upload behavior.
-
----
-
-# Tests
+Each module normally contains:
 
 ```text
-tests/
+module/
+├── *.controller.ts
+├── *.service.ts
+├── *.routes.ts
+├── *.validation.ts
+└── *.types.ts
 ```
 
-Contains automated tests for the application.
+**Before changing code, ask your LLM to inspect the existing project and follow its architecture. Do not let it redesign the project or modify another team's module unnecessarily.**
 
-Feature-specific tests should be organized clearly so another developer can identify which module they belong to.
+### Team ownership
 
----
+| Team | Folder                       |
+| ---- | ---------------------------- |
+| 1    | `src/modules/auth/`          |
+| 2    | `src/modules/transactions/`  |
+| 3    | `src/modules/vouchers/`      |
+| 4    | `src/modules/calculations/`  |
+| 5    | `src/modules/members/`       |
+| 6    | `src/modules/fees/`          |
+| 7    | `src/modules/reports/`       |
+| 8    | `src/modules/notifications/` |
 
-# Environment Variables
-
-Development configuration belongs in `.env`.
-
-Example:
-
-```env
-DATABASE_URL="mysql://tms:hello_world@localhost:3306/tms"
-```
-
-Never hard-code passwords, tokens, JWT secrets, or other credentials inside TypeScript source files.
+Shared infrastructure (`middleware`, `lib`, `config`, `app.ts`, `server.ts`, and `prisma/`) should be changed only when necessary and coordinated with the other teams.
 
 ---
 
