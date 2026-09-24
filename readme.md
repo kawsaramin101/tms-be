@@ -18,20 +18,46 @@ This project is developed collaboratively by 8 teams. Each team owns a separate 
 
 # Getting Started
 
-## 1. Clone the repository
+## 1. Fork the repository
+
+Open the main repository:
+
+https://github.com/kawsaramin101/tms-be
+
+Click **Fork** in the top-right corner of GitHub.
+
+Create the fork under your own GitHub account.
+
+You will now have your own copy:
+
+```text
+https://github.com/<your-username>/tms-be
+```
+
+**Do not push directly to the main repository.**
+
+---
+
+## 2. Clone your fork
+
+Clone **your fork**, not the original repository:
 
 ```bash
-git clone https://github.com/kawsaramin101/tms-be.git
+git clone https://github.com/<your-username>/tms-be.git
 cd tms-be
 ```
 
-## 2. Install dependencies
+---
+
+## 3. Install dependencies
 
 ```bash
 npm install
 ```
 
-## 3. Configure the database
+---
+
+## 4. Configure the database
 
 This project uses MariaDB/MySQL.
 
@@ -50,7 +76,7 @@ Host: localhost
 Port: 3306
 ```
 
-The database connection should be configured in `.env`:
+Configure the `.env` file:
 
 ```env
 DATABASE_URL="mysql://tms:hello_world@localhost:3306/tms"
@@ -58,13 +84,17 @@ DATABASE_URL="mysql://tms:hello_world@localhost:3306/tms"
 
 Do not commit real production credentials.
 
-## 4. Generate Prisma Client
+---
+
+## 5. Generate Prisma Client
 
 ```bash
 npx prisma generate
 ```
 
-## 5. Run database migrations
+---
+
+## 6. Run database migrations
 
 ```bash
 npx prisma migrate dev
@@ -76,7 +106,9 @@ If you are creating the first migration:
 npx prisma migrate dev --name init
 ```
 
-## 6. Start the development server
+---
+
+## 7. Start the development server
 
 ```bash
 npm run dev
@@ -338,16 +370,6 @@ This is the central database schema.
 
 All database models are defined here.
 
-For example:
-
-```prisma
-model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  createdAt DateTime @default(now())
-}
-```
-
 ### Important
 
 Because all 8 teams use the same database, **do not independently redesign or duplicate database models** inside individual modules.
@@ -358,7 +380,8 @@ If your feature requires a database change:
 2. Update `schema.prisma`.
 3. Create a Prisma migration.
 4. Test the migration.
-5. Commit the migration with the schema change.
+5. Commit the schema and migration together.
+6. Mention the database change in your Pull Request.
 
 ## `prisma/migrations/`
 
@@ -493,8 +516,6 @@ Before asking an LLM to modify code, give it the relevant project context.
 
 ## Recommended prompt
 
-Copy this into your LLM:
-
 ```text
 You are working on the TMS backend.
 
@@ -597,6 +618,7 @@ Ask the LLM:
 
 ```text
 Before modifying prisma/schema.prisma, inspect the existing schema and explain:
+
 1. What models are affected?
 2. Whether an existing model can be reused.
 3. What relationships will change.
@@ -608,48 +630,134 @@ Do not modify the schema until I confirm.
 
 ---
 
-# Git Workflow
+# Git & GitHub Workflow
 
-Before starting work:
+This repository uses a **Fork → Branch → Pull Request** workflow.
 
-```bash
-git pull origin main
+Do not push directly to the main repository.
+
+## 1. Fork the repository
+
+Go to:
+
+```text
+https://github.com/kawsaramin101/tms-be
 ```
 
-Create a branch for your work:
+Click **Fork**.
+
+You should now have:
+
+```text
+https://github.com/<your-username>/tms-be
+```
+
+---
+
+## 2. Clone your fork
+
+```bash
+git clone https://github.com/<your-username>/tms-be.git
+cd tms-be
+```
+
+---
+
+## 3. Configure the original repository as `upstream`
+
+Your fork is `origin`.
+
+The class repository is `upstream`.
+
+```bash
+git remote add upstream https://github.com/kawsaramin101/tms-be.git
+```
+
+Verify:
+
+```bash
+git remote -v
+```
+
+You should see something similar to:
+
+```text
+origin    https://github.com/<your-username>/tms-be.git
+upstream  https://github.com/kawsaramin101/tms-be.git
+```
+
+---
+
+# Before Starting New Work
+
+First update your local copy from the main repository:
+
+```bash
+git fetch upstream
+git checkout main
+git merge upstream/main
+```
+
+Then push the updated main branch to your fork:
+
+```bash
+git push origin main
+```
+
+---
+
+# Create a Feature Branch
+
+Never develop directly on `main`.
+
+Create a branch:
 
 ```bash
 git checkout -b feature/<your-feature>
 ```
 
-Example:
+Examples:
 
 ```bash
 git checkout -b feature/member-management
 ```
 
-After making changes:
-
 ```bash
-git status
-git add .
-git commit -m "feat: add member management"
-git push -u origin feature/member-management
+git checkout -b feature/voucher-upload
 ```
 
-Then create a Pull Request on GitHub.
+```bash
+git checkout -b feature/transaction-api
+```
 
 ---
 
-# Commit Message Format
+# Commit Your Changes
 
-Use simple conventional commit messages.
+Check what changed:
+
+```bash
+git status
+```
+
+Stage your changes:
+
+```bash
+git add .
+```
+
+Commit:
+
+```bash
+git commit -m "feat: add member management"
+```
 
 Examples:
 
 ```text
-feat: add member creation
+feat: add member management
 feat: add voucher upload
+feat: add transaction creation
 fix: validate transaction amount
 fix: handle invalid login
 refactor: simplify transaction service
@@ -658,55 +766,71 @@ docs: update API documentation
 
 ---
 
-# Before Opening a Pull Request
-
-Run:
+# Push Your Branch
 
 ```bash
-npm run build
+git push -u origin feature/<your-feature>
 ```
 
-Then verify that:
+Example:
 
 ```bash
-npx prisma generate
+git push -u origin feature/member-management
 ```
-
-works correctly.
-
-If your change includes a database schema change, also verify the Prisma migration.
-
-Make sure you have not accidentally modified another team's module.
 
 ---
 
-# Team Boundaries
+# Create a Pull Request
 
-The intended ownership is:
+After pushing your branch:
 
-```text
-Team 1 → src/modules/auth/
-Team 2 → src/modules/transactions/
-Team 3 → src/modules/vouchers/
-Team 4 → src/modules/calculations/
-Team 5 → src/modules/members/
-Team 6 → src/modules/fees/
-Team 7 → src/modules/reports/
-Team 8 → src/modules/notifications/
-```
-
-Shared infrastructure:
+1. Open your fork on GitHub.
+2. GitHub should show your recently pushed branch.
+3. Click **Compare & pull request**.
+4. Make sure the Pull Request is going:
 
 ```text
-src/middleware/
-src/lib/
-src/config/
-src/app.ts
-src/server.ts
-prisma/
+YOUR-USERNAME/tms-be
+        ↓
+kawsaramin101/tms-be
+        ↓
+main
 ```
 
-Changes to shared infrastructure should be discussed with the other teams before merging.
+5. Add a clear title.
+
+Example:
+
+```text
+feat: add member management
+```
+
+6. Submit the Pull Request.
+
+
+---
+
+
+# Keeping Your Fork Updated
+
+While other teams are working, the main repository will continue to change.
+
+Before starting new work:
+
+```bash
+git fetch upstream
+git checkout main
+git merge upstream/main
+git push origin main
+```
+
+Then create a new feature branch:
+
+```bash
+git checkout -b feature/<your-feature>
+```
+
+This keeps your fork synchronized with the class repository.
 
 ---
 
@@ -726,4 +850,4 @@ shared Prisma/database
 single Express application
 ```
 
-Each team should own its feature, while the whole class maintains one consistent architecture and database.
+Each team owns its feature, while the whole class maintains one consistent architecture and database.
